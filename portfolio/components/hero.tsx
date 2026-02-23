@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { ArrowRight, Workflow, GitBranch, Play, CheckCircle2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Workflow, GitBranch, Play } from "lucide-react";
+import { motion } from "framer-motion";
+import { ProcessRail } from "@/components/process-rail";
 
 const TITLE_LINE_1 = "Tecnología aplicada a";
 const TITLE_LINE_2 = "Operaciones Reales.";
@@ -63,14 +64,14 @@ export function Hero() {
         };
     }, [phase, typeLine]);
 
-    const cursorActive = phase !== "done";
+
 
     return (
         <section
             id="hero"
-            className="relative min-h-[100svh] py-24 md:py-32 flex flex-col justify-center overflow-hidden bg-background"
+            className="relative min-h-[100dvh] w-full pt-[108px] pb-14 md:pt-[116px] md:pb-24 flex flex-col overflow-hidden bg-background"
         >
-            <div className="container px-5 md:px-6 z-20 mx-auto">
+            <div className="container px-5 md:px-6 z-20 mx-auto flex-1 flex flex-col justify-start md:justify-center pt-2 md:pt-6">
                 <div className="grid grid-cols-1 gap-8 md:gap-12 items-center">
                     {/* Process-style header indicator */}
                     <motion.div
@@ -80,10 +81,10 @@ export function Hero() {
                     >
                         <Badge
                             variant="outline"
-                            className="w-fit bg-foreground/5 text-foreground border-foreground/20 backdrop-blur-sm px-3 py-1.5 rounded-sm text-xs sm:text-sm font-mono shadow-sm uppercase tracking-wider"
+                            className="w-fit max-w-full bg-foreground/5 text-foreground border-foreground/20 backdrop-blur-sm px-3 py-1.5 rounded-sm text-[10px] sm:text-xs md:text-sm font-mono shadow-sm uppercase tracking-wider whitespace-normal text-left"
                         >
-                            <Workflow className="h-3 w-3 mr-2" />
-                            Ingenieur | Developer
+                            <Workflow className="h-3 w-3 mr-2 shrink-0" />
+                            <span>Ingeniería industrial | Desarrollo de software</span>
                         </Badge>
                     </motion.div>
 
@@ -117,47 +118,18 @@ export function Hero() {
                         transition={{ duration: 0.7, ease: "easeOut" }}
                     >
                         <p className="max-w-[700px] text-base sm:text-lg text-muted-foreground md:text-xl md:leading-8 font-light">
-                            Soy{" "}
-                            <strong className="text-foreground font-semibold">
-                                Ignacio &quot;Nacho&quot; Baldovino
-                            </strong>
-                            . No solo escribo código; optimizo y escalo sistemas. Combino mapeo de procesos,
-                            eficiencia y métricas precisas con ejecución técnica para construir
-                            arquitecturas operativas que funcionan.
+                            Soy Ignacio Baldovino, estudiante de Ingeniería Industrial (UTN FRC). Diseño e implemento soluciones a medida para transformar operaciones complejas en procesos claros, medibles y escalables.
                         </p>
 
-                        {/* Engineering Process Flow visual snippet */}
-                        <motion.div
-                            className="w-fit flex flex-col sm:flex-row items-center gap-2 sm:gap-4 font-mono text-[10px] sm:text-xs text-muted-foreground bg-muted/30 border border-border/50 p-3 sm:p-4 rounded-md"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={showContent ? { opacity: 1, scale: 1 } : {}}
-                            transition={{ duration: 0.5, delay: 0.3 }}
-                        >
-                            <div className="flex items-center gap-2 p-2 bg-background border border-border/40 rounded shadow-sm">
-                                <GitBranch className="h-3 w-3 sm:h-4 sm:w-4 text-foreground/70" />
-                                <span className="uppercase tracking-widest font-semibold flex-1 sm:flex-none text-center">Diagnóstico</span>
-                            </div>
-
-                            <div className="hidden sm:flex h-px bg-border/80 w-6 items-center shrink-0" />
-                            <div className="flex sm:hidden w-px h-3 bg-border/80 my-0.5 relative">
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-border/80" />
-                            </div>
-
-                            <div className="flex items-center gap-2 p-2 bg-background border border-border/40 rounded shadow-sm">
-                                <Workflow className="h-3 w-3 sm:h-4 sm:w-4 text-foreground/70" />
-                                <span className="uppercase tracking-widest font-semibold flex-1 sm:flex-none text-center">Desarrollo</span>
-                            </div>
-
-                            <div className="hidden sm:flex h-px bg-border/80 w-6 items-center shrink-0" />
-                            <div className="flex sm:hidden w-px h-3 bg-border/80 my-0.5 relative">
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-border/80" />
-                            </div>
-
-                            <div className="flex items-center gap-2 p-2 bg-foreground text-background border border-foreground rounded shadow-sm">
-                                <Play className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="uppercase tracking-widest font-semibold flex-1 sm:flex-none text-center">Ejecución</span>
-                            </div>
-                        </motion.div>
+                        {showContent && (
+                            <ProcessRail
+                                steps={[
+                                    { icon: GitBranch, label: "Diagnóstico" },
+                                    { icon: Workflow, label: "Desarrollo" },
+                                    { icon: Play, label: "Ejecución", active: true },
+                                ]}
+                            />
+                        )}
 
                         {/* Buttons mt-2 for a bit of separation */}
                         <motion.div
@@ -172,7 +144,7 @@ export function Hero() {
                                 asChild
                             >
                                 <Link href="#projects">
-                                    Ver Arquitecturas{" "}
+                                    Ver Soluciones{" "}
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>
@@ -196,7 +168,7 @@ export function Hero() {
 
             {/* Scroll indicator */}
             <motion.div
-                className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+                className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
                 initial={{ opacity: 0 }}
                 animate={showContent ? { opacity: 1 } : {}}
                 transition={{ delay: 1.2, duration: 0.6 }}

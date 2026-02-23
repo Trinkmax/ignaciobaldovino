@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import * as React from "react";
 import {
     Card,
@@ -18,6 +19,9 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { ProjectDetailDrawer } from "@/components/mobile/project-detail-drawer";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -55,13 +59,13 @@ import { motion } from "framer-motion";
 import { useIntersection } from "@/hooks/use-intersection";
 
 /* ─── Tipos ─── */
-interface ProjectModule {
+export interface ProjectModule {
     icon: LucideIcon;
     title: string;
     description: string;
 }
 
-interface ProjectDetail {
+export interface ProjectDetail {
     title: string;
     subtitle: string;
     description: string;
@@ -548,12 +552,14 @@ function ProjectDetailModal({
                                 </h4>
                                 <div className="flex gap-4 overflow-x-auto pb-4 snap-x pr-4">
                                     {project.images.map((img, idx) => (
-                                        <img
-                                            key={idx}
-                                            src={img}
-                                            alt={`${project.title} screenshot ${idx + 1}`}
-                                            className="h-40 sm:h-48 md:h-64 w-auto rounded-lg object-contain border border-border/10 bg-muted/30 snap-center shrink-0"
-                                        />
+                                        <div key={idx} className="relative h-40 sm:h-48 md:h-64 aspect-[4/3] rounded-lg border border-border/10 bg-muted/30 snap-center shrink-0 overflow-hidden">
+                                            <Image
+                                                src={img}
+                                                alt={`${project.title} screenshot ${idx + 1}`}
+                                                fill
+                                                className="object-contain"
+                                            />
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -717,7 +723,7 @@ const cardVariants = {
         transition: {
             duration: 0.6,
             delay: i * 0.1,
-            ease: "easeOut",
+            ease: "easeOut" as const,
         },
     }),
 };
@@ -725,7 +731,8 @@ const cardVariants = {
 /* ─── Componente principal ─── */
 export function Projects() {
     const [selectedProject, setSelectedProject] = React.useState<ProjectDetail | null>(null);
-    const { ref, isInView } = useIntersection<HTMLElement>({ threshold: 0.05 });
+    const { ref, isInView } = useIntersection<HTMLDivElement>({ threshold: 0.05 });
+    const isMobile = useMediaQuery("(max-width: 768px)");
 
     return (
         <section id="projects" ref={ref} className="py-16 md:py-24 container px-5 md:px-6 mx-auto scroll-mt-10">
@@ -736,7 +743,7 @@ export function Projects() {
                 transition={{ duration: 0.5 }}
             >
                 <Badge variant="secondary" className="w-fit font-mono text-xs">
-                    // PORTAFOLIO
+                    {"// PORTAFOLIO"}
                 </Badge>
                 <h2 className="text-2xl sm:text-3xl font-bold tracking-tighter md:text-4xl lg:text-5xl">
                     Proyectos Destacados
@@ -745,78 +752,155 @@ export function Projects() {
                     Soluciones diseñadas desde la operación hacia el código.
                 </p>
             </motion.div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                {projects.map((project, i) => (
-                    <motion.div
-                        key={project.title}
-                        initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
-                        custom={i}
-                        variants={cardVariants}
-                    >
-                        <Card className="h-full group relative flex flex-col overflow-hidden border-muted bg-card/50 hover:bg-card hover:shadow-2xl transition-all duration-300 hover:border-primary/20 flex-1">
-                            {/* Subtle tech background patterns */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -z-10 group-hover:bg-primary/10 transition-colors" />
-
-                            <CardHeader className="pb-3 sm:pb-4">
-                                <div className="flex justify-between items-start mb-2 sm:mb-3">
-                                    <div className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl w-fit ${project.bg}`}>
-                                        <project.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${project.color}`} />
-                                    </div>
-                                    <Badge
-                                        variant={project.status === "Producto Principal" ? "default" : "secondary"}
-                                        className="font-mono text-[10px] sm:text-xs tracking-wider border-border/50"
-                                    >
-                                        {project.status}
-                                    </Badge>
-                                </div>
-                                <CardTitle className="text-xl sm:text-2xl font-bold flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                                    {project.title}
-                                    <span className="text-muted-foreground font-normal text-[10px] sm:text-sm tracking-wider uppercase">
-                                        / {project.subtitle}
-                                    </span>
-                                </CardTitle>
-                                <CardDescription className="text-sm sm:text-base mt-2 sm:mt-3 leading-relaxed">
-                                    {project.description}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1 pb-4 sm:pb-6">
-                                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-auto">
-                                    {project.tags.map((tag) => (
-                                        <Badge
-                                            key={tag}
-                                            variant="outline"
-                                            className="bg-background/50 backdrop-blur-sm border-primary/10 text-foreground/70 text-[10px] sm:text-xs"
-                                        >
-                                            {tag}
-                                        </Badge>
-                                    ))}
-                                </div>
-                            </CardContent>
-                            <CardFooter className="pt-0">
-                                <Button
-                                    variant="ghost"
-                                    className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-colors font-mono text-xs sm:text-sm h-10 sm:h-11"
-                                    onClick={() => setSelectedProject(project)}
+            {isMobile ? (
+                <Carousel className="w-full" opts={{ align: "start" }}>
+                    <CarouselContent className="-ml-4">
+                        {projects.map((project, i) => (
+                            <CarouselItem key={project.title} className="pl-4 basis-[85%] sm:basis-1/2">
+                                <motion.div
+                                    initial="hidden"
+                                    animate={isInView ? "visible" : "hidden"}
+                                    custom={i}
+                                    variants={cardVariants}
+                                    className="h-full"
                                 >
-                                    Ver Detalles
-                                    <ArrowUpRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </motion.div>
-                ))}
-            </div>
+                                    <Card className="h-full group relative flex flex-col overflow-hidden border-muted bg-card/50 hover:bg-card hover:shadow-2xl transition-all duration-300 hover:border-primary/20 flex-1">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -z-10 group-hover:bg-primary/10 transition-colors" />
+                                        <CardHeader className="pb-3 sm:pb-4">
+                                            <div className="flex justify-between items-start mb-2 sm:mb-3">
+                                                <div className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl w-fit ${project.bg}`}>
+                                                    <project.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${project.color}`} />
+                                                </div>
+                                                <Badge
+                                                    variant={project.status === "Producto Principal" ? "default" : "secondary"}
+                                                    className="font-mono text-[10px] sm:text-xs tracking-wider border-border/50"
+                                                >
+                                                    {project.status}
+                                                </Badge>
+                                            </div>
+                                            <CardTitle className="text-xl sm:text-2xl font-bold flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                                                {project.title}
+                                                <span className="text-muted-foreground font-normal text-[10px] sm:text-sm tracking-wider uppercase">
+                                                    / {project.subtitle}
+                                                </span>
+                                            </CardTitle>
+                                            <CardDescription className="text-sm sm:text-base mt-2 sm:mt-3 leading-relaxed">
+                                                {project.description}
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="flex-1 pb-4 sm:pb-6">
+                                            <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-auto">
+                                                {project.tags.map((tag) => (
+                                                    <Badge
+                                                        key={tag}
+                                                        variant="outline"
+                                                        className="bg-background/50 backdrop-blur-sm border-primary/10 text-foreground/70 text-[10px] sm:text-xs"
+                                                    >
+                                                        {tag}
+                                                    </Badge>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                        <CardFooter className="pt-0">
+                                            <Button
+                                                variant="ghost"
+                                                className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-colors font-mono text-xs sm:text-sm h-10 sm:h-11 border border-transparent group-hover:border-primary/20"
+                                                onClick={() => setSelectedProject(project)}
+                                            >
+                                                Ver Detalles
+                                                <ArrowUpRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                                            </Button>
+                                        </CardFooter>
+                                    </Card>
+                                </motion.div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                </Carousel>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                    {projects.map((project, i) => (
+                        <motion.div
+                            key={project.title}
+                            initial="hidden"
+                            animate={isInView ? "visible" : "hidden"}
+                            custom={i}
+                            variants={cardVariants}
+                            className="h-full"
+                        >
+                            <Card className="h-full group relative flex flex-col overflow-hidden border-muted bg-card/50 hover:bg-card hover:shadow-2xl transition-all duration-300 hover:border-primary/20 flex-1">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -z-10 group-hover:bg-primary/10 transition-colors" />
+
+                                <CardHeader className="pb-3 sm:pb-4">
+                                    <div className="flex justify-between items-start mb-2 sm:mb-3">
+                                        <div className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl w-fit ${project.bg}`}>
+                                            <project.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${project.color}`} />
+                                        </div>
+                                        <Badge
+                                            variant={project.status === "Producto Principal" ? "default" : "secondary"}
+                                            className="font-mono text-[10px] sm:text-xs tracking-wider border-border/50"
+                                        >
+                                            {project.status}
+                                        </Badge>
+                                    </div>
+                                    <CardTitle className="text-xl sm:text-2xl font-bold flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                                        {project.title}
+                                        <span className="text-muted-foreground font-normal text-[10px] sm:text-sm tracking-wider uppercase">
+                                            / {project.subtitle}
+                                        </span>
+                                    </CardTitle>
+                                    <CardDescription className="text-sm sm:text-base mt-2 sm:mt-3 leading-relaxed">
+                                        {project.description}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-1 pb-4 sm:pb-6">
+                                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-auto">
+                                        {project.tags.map((tag) => (
+                                            <Badge
+                                                key={tag}
+                                                variant="outline"
+                                                className="bg-background/50 backdrop-blur-sm border-primary/10 text-foreground/70 text-[10px] sm:text-xs"
+                                            >
+                                                {tag}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="pt-0">
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-colors font-mono text-xs sm:text-sm h-10 sm:h-11"
+                                        onClick={() => setSelectedProject(project)}
+                                    >
+                                        Ver Detalles
+                                        <ArrowUpRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </motion.div>
+                    ))}
+                </div>
+            )}
 
             {/* Modal de detalle */}
             {selectedProject && (
-                <ProjectDetailModal
-                    project={selectedProject}
-                    open={!!selectedProject}
-                    onOpenChange={(open) => {
-                        if (!open) setSelectedProject(null);
-                    }}
-                />
+                isMobile ? (
+                    <ProjectDetailDrawer
+                        project={selectedProject}
+                        open={!!selectedProject}
+                        onOpenChange={(open) => {
+                            if (!open) setSelectedProject(null);
+                        }}
+                    />
+                ) : (
+                    <ProjectDetailModal
+                        project={selectedProject}
+                        open={!!selectedProject}
+                        onOpenChange={(open) => {
+                            if (!open) setSelectedProject(null);
+                        }}
+                    />
+                )
             )}
         </section>
     );
