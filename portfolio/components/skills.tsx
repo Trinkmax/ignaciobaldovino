@@ -3,7 +3,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Wrench, BarChart, Bot, Laptop } from "lucide-react";
 import { motion } from "framer-motion";
-import { useIntersection } from "@/hooks/use-intersection";
+
 
 const skillCategories = [
     {
@@ -70,15 +70,14 @@ const cardVariants = {
 };
 
 export function Skills() {
-    const { ref, isInView } = useIntersection<HTMLElement>({ threshold: 0.05 });
-
     return (
-        <section id="skills" ref={ref} className="py-16 md:py-24 bg-muted/30">
+        <section id="skills" className="py-16 md:py-24 bg-muted/30">
             <div className="container mx-auto px-5 md:px-6">
                 <motion.div
                     className="flex flex-col mb-10 md:mb-16 space-y-3 md:space-y-4 text-center"
                     initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.6 }}
                 >
                     <h2 className="text-2xl sm:text-3xl font-bold tracking-tighter md:text-4xl lg:text-5xl">
@@ -93,7 +92,8 @@ export function Skills() {
                         <motion.div
                             key={category.title}
                             initial="hidden"
-                            animate={isInView ? "visible" : "hidden"}
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.2 }}
                             custom={i}
                             variants={cardVariants}
                         >

@@ -4,22 +4,26 @@ import Link from "next/link";
 import Image from "next/image";
 import { Github, Linkedin, Mail, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { useIntersection } from "@/hooks/use-intersection";
+
 
 export function Footer() {
-    const { ref, isInView } = useIntersection<HTMLElement>({ threshold: 0.2 });
-
     return (
-        <footer ref={ref} className="border-t border-border/50 py-8 md:py-10 bg-background/50 backdrop-blur-sm relative overflow-hidden">
-            {/* Subtle bottom glow */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-24 bg-primary/5 blur-[80px] -z-10 rounded-full" />
+        <footer className="border-t border-border/40 bg-background py-10 md:py-16 relative overflow-hidden">
+            <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none" />
 
             <div className="container flex flex-col items-center justify-between gap-6 md:flex-row px-5 md:px-6 mx-auto">
                 <motion.div
-                    className="flex flex-col items-center gap-4 px-4 md:flex-row md:gap-3 md:px-0 w-full md:w-auto"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-8"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                            opacity: 1,
+                            transition: { staggerChildren: 0.1 },
+                        },
+                    }}
                 >
                     <Image
                         src="/brand/IB.png"
@@ -37,7 +41,8 @@ export function Footer() {
                 <motion.div
                     className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center w-full md:w-auto"
                     initial={{ opacity: 0, scale: 0.95 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
                 >
                     <Link

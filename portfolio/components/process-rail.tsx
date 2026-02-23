@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useIntersection } from "@/hooks/use-intersection";
+
 
 interface ProcessStep {
     icon: React.ElementType;
@@ -16,17 +16,15 @@ interface ProcessRailProps {
 }
 
 export function ProcessRail({ steps, className }: ProcessRailProps) {
-    const { ref, isInView } = useIntersection<HTMLDivElement>({ threshold: 0.1 });
-
     return (
         <motion.div
-            ref={ref}
             className={cn(
                 "w-fit flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 font-mono text-[10px] sm:text-xs text-muted-foreground",
                 className
             )}
             initial={{ opacity: 0, scale: 0.95 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: 0.3 }}
         >
             {steps.map((step, idx) => (

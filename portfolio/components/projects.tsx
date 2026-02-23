@@ -56,7 +56,6 @@ import {
     type LucideIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useIntersection } from "@/hooks/use-intersection";
 
 /* ─── Tipos ─── */
 export interface ProjectModule {
@@ -279,7 +278,7 @@ const projects: ProjectDetail[] = [
         link: "https://loscabritosdeoro.com",
         color: "text-yellow-500",
         bg: "bg-yellow-500/10",
-        images: ["/images/projects/loscabritsdeoro.png"],
+        images: ["/images/projects/loscabritsdeoro.webp"],
         longDescription:
             "El proyecto consiste en la profesionalización digital completa del restaurante Los Cabritos de Oro, migrando de una gestión tradicional a un ecosistema conectado que abarca desde la infraestructura web hasta la captación activa de clientes mediante pauta publicitaria. La web funciona como el centro de operaciones digitales del restaurante.",
         problem: "El restaurante tenía buena comida y buena reputación local, pero no existía en internet. No tenía web, no aparecía en Google, y dependía 100% del boca a boca y de que alguien pasara por la puerta. Los turistas —su mayor oportunidad— no lo encontraban.",
@@ -334,10 +333,10 @@ const projects: ProjectDetail[] = [
         color: "text-purple-500",
         bg: "bg-purple-500/10",
         images: [
-            "/images/projects/killadashboard1.png",
-            "/images/projects/killa_dashboard.png",
-            "/images/projects/killacalendario1.png",
-            "/images/projects/killa_calendario2.png"
+            "/images/projects/killadashboard1.webp",
+            "/images/projects/killa_dashboard.webp",
+            "/images/projects/killacalendario1.webp",
+            "/images/projects/killa_calendario2.webp"
         ],
         demoNotice: "Este es el sistema hotelero tal cual como funciona y esta navegable pero contiene datos mocks que esta bien aclarar que son simulados, no reales.",
         longDescription:
@@ -731,15 +730,15 @@ const cardVariants = {
 /* ─── Componente principal ─── */
 export function Projects() {
     const [selectedProject, setSelectedProject] = React.useState<ProjectDetail | null>(null);
-    const { ref, isInView } = useIntersection<HTMLDivElement>({ threshold: 0.05 });
     const isMobile = useMediaQuery("(max-width: 768px)");
 
     return (
-        <section id="projects" ref={ref} className="py-16 md:py-24 container px-5 md:px-6 mx-auto scroll-mt-10">
+        <section id="projects" className="py-16 md:py-24 container px-5 md:px-6 mx-auto scroll-mt-10">
             <motion.div
                 className="flex flex-col mb-10 md:mb-16 space-y-3 md:space-y-4"
                 initial={{ opacity: 0, x: -20 }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.5 }}
             >
                 <Badge variant="secondary" className="w-fit font-mono text-xs">
@@ -759,7 +758,8 @@ export function Projects() {
                             <CarouselItem key={project.title} className="pl-4 basis-[85%] sm:basis-1/2">
                                 <motion.div
                                     initial="hidden"
-                                    animate={isInView ? "visible" : "hidden"}
+                                    whileInView="visible"
+                                    viewport={{ once: true, margin: "-50px" }}
                                     custom={i}
                                     variants={cardVariants}
                                     className="h-full"
@@ -823,7 +823,8 @@ export function Projects() {
                         <motion.div
                             key={project.title}
                             initial="hidden"
-                            animate={isInView ? "visible" : "hidden"}
+                            whileInView="visible"
+                            viewport={{ once: true, margin: "-50px" }}
                             custom={i}
                             variants={cardVariants}
                             className="h-full"

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Mail, Linkedin, Github, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useIntersection } from "@/hooks/use-intersection";
+
 
 const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -15,10 +15,8 @@ const fadeUp = {
 };
 
 export function Contact() {
-    const { ref, isInView } = useIntersection<HTMLElement>({ threshold: 0.15 });
-
     return (
-        <section id="contact" ref={ref} className="py-16 md:py-24 bg-background relative overflow-hidden">
+        <section id="contact" className="py-16 md:py-24 bg-background relative overflow-hidden">
             <div className="container px-5 md:px-6 mx-auto relative z-10">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-primary/5 rounded-full blur-[100px] -z-10" />
 
@@ -26,7 +24,8 @@ export function Contact() {
                     <motion.div
                         className="space-y-3 md:space-y-4"
                         initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
                         custom={0}
                         variants={fadeUp}
                     >
@@ -43,7 +42,8 @@ export function Contact() {
                     <motion.div
                         className="grid gap-5 md:gap-6 w-full max-w-md bg-card/60 backdrop-blur border p-6 sm:p-8 rounded-2xl shadow-xl"
                         initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
                         custom={1}
                         variants={fadeUp}
                     >
@@ -61,7 +61,8 @@ export function Contact() {
                                         key={item}
                                         className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground"
                                         initial={{ opacity: 0, x: -10 }}
-                                        animate={isInView ? { opacity: 1, x: 0 } : {}}
+                                        whileInView={{ opacity: 1, x: 0 }}
+                                        viewport={{ once: true, amount: 0.2 }}
                                         transition={{
                                             duration: 0.4,
                                             delay: 0.4 + i * 0.1,

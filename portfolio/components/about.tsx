@@ -3,7 +3,6 @@
 import { Badge } from "@/components/ui/badge";
 import { UserCheck, Briefcase, Rocket } from "lucide-react";
 import { motion } from "framer-motion";
-import { useIntersection } from "@/hooks/use-intersection";
 import { SectionShell } from "@/components/section-shell";
 import { staggerCards, cinematicEnter } from "@/lib/motion-presets";
 
@@ -15,17 +14,16 @@ const stepsData = [
 ];
 
 export function About() {
-    const { ref, isInView } = useIntersection<HTMLDivElement>({ threshold: 0.2 });
-
     return (
         <SectionShell id="about" className="bg-background">
-            <div ref={ref} className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-start">
 
                 {/* Left content: Core Narrative */}
                 <div className="space-y-8 md:space-y-10">
                     <motion.div
                         initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
                         variants={cinematicEnter}
                         className="space-y-4"
                     >
@@ -63,7 +61,8 @@ export function About() {
                                 key={item.title}
                                 className="group flex gap-4 sm:gap-6 items-start bg-card/50 border border-border/40 p-4 sm:p-5 rounded-lg hover:bg-muted/30 transition-colors relative z-10"
                                 initial="hidden"
-                                animate={isInView ? "visible" : "hidden"}
+                                whileInView="visible" // Replaced animate with whileInView
+                                viewport={{ once: true, amount: 0.2 }} // Added viewport prop
                                 custom={i}
                                 variants={staggerCards}
                             >
@@ -87,7 +86,8 @@ export function About() {
                 <motion.div
                     className="relative flex flex-col pt-4 lg:pt-0"
                     initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
                     custom={2}
                     variants={cinematicEnter}
                 >
@@ -106,7 +106,8 @@ export function About() {
                                     className={`flex items-stretch rounded border ${step.highlight ? "bg-foreground text-background border-foreground" : "bg-background border-border"
                                         }`}
                                     initial={{ opacity: 0, x: 20 }}
-                                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true, amount: 0.2 }}
                                     transition={{ duration: 0.4, delay: 0.4 + i * 0.1, ease: "easeOut" }}
                                 >
                                     <div className={`flex items-center justify-center w-10 sm:w-12 shrink-0 border-r ${step.highlight ? "border-background/20" : "border-border"
