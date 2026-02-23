@@ -1,5 +1,9 @@
+"use client";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Wrench, BarChart, Bot, Laptop } from "lucide-react";
+import { motion } from "framer-motion";
+import { useIntersection } from "@/hooks/use-intersection";
 
 const skillCategories = [
     {
@@ -11,8 +15,8 @@ const skillCategories = [
             "Diseño de sistemas operativos",
             "KPIs y control métrico",
             "Estandarización operativa",
-            "Mejora continua (Kaizen)"
-        ]
+            "Mejora continua (Kaizen)",
+        ],
     },
     {
         title: "Desarrollo de Producto",
@@ -23,8 +27,8 @@ const skillCategories = [
             "Paneles Administrativos (Next.js/React)",
             "Arquitectura Multi-tenant",
             "UX para Operación en Campo",
-            "Sistemas POS e Inventarios"
-        ]
+            "Sistemas POS e Inventarios",
+        ],
     },
     {
         title: "Automatización & IA",
@@ -35,8 +39,8 @@ const skillCategories = [
             "Bots Conversacionales (WhatsApp API)",
             "RAG & LLMs para Soporte",
             "Reglas de Negocio Automatizadas",
-            "Handoff Humano/Bot"
-        ]
+            "Handoff Humano/Bot",
+        ],
     },
     {
         title: "Data / BI & Ejecución",
@@ -47,47 +51,82 @@ const skillCategories = [
             "Análisis Operativo (Excel Avanzado)",
             "Consultoría IT Integral",
             "Gestión de Proyectos Ágiles",
-            "Trazabilidad de Datos"
-        ]
-    }
+            "Trazabilidad de Datos",
+        ],
+    },
 ];
 
+const cardVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.5,
+            delay: i * 0.1,
+            ease: "easeOut",
+        },
+    }),
+};
+
 export function Skills() {
+    const { ref, isInView } = useIntersection<HTMLElement>({ threshold: 0.05 });
+
     return (
-        <section id="skills" className="py-24 bg-muted/30">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="flex flex-col mb-16 space-y-4 text-center">
-                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Skills & Arsenal</h2>
-                    <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+        <section id="skills" ref={ref} className="py-16 md:py-24 bg-muted/30">
+            <div className="container mx-auto px-5 md:px-6">
+                <motion.div
+                    className="flex flex-col mb-10 md:mb-16 space-y-3 md:space-y-4 text-center"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.6 }}
+                >
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tighter md:text-4xl lg:text-5xl">
+                        Skills & Arsenal
+                    </h2>
+                    <p className="mx-auto max-w-[700px] text-sm sm:text-base text-muted-foreground md:text-lg">
                         Herramientas técnicas aplicadas con visión de negocio.
                     </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {skillCategories.map((category) => (
-                        <Card key={category.title} className="bg-background hover:shadow-xl hover:border-primary/50 transition-all duration-300 border-muted group relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                                <category.icon className="w-24 h-24 text-primary transform rotate-12 translate-x-8 -translate-y-8" />
-                            </div>
-                            <CardHeader className="flex flex-col space-y-2 pb-2 z-10">
-                                <category.icon className="h-8 w-8 text-primary mb-2" />
-                                <CardTitle className="text-lg font-bold leading-tight">
-                                    {category.title}
-                                </CardTitle>
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                                    {category.description}
-                                </p>
-                            </CardHeader>
-                            <CardContent className="z-10 relative">
-                                <ul className="grid gap-2 mt-2">
-                                    {category.items.map((item) => (
-                                        <li key={item} className="text-sm text-foreground/80 flex items-start">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-primary/60 mr-2 mt-1.5 shrink-0" />
-                                            <span className="leading-snug">{item}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                        </Card>
+                </motion.div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                    {skillCategories.map((category, i) => (
+                        <motion.div
+                            key={category.title}
+                            initial="hidden"
+                            animate={isInView ? "visible" : "hidden"}
+                            custom={i}
+                            variants={cardVariants}
+                        >
+                            <Card className="h-full bg-background hover:shadow-xl hover:border-primary/50 transition-all duration-300 border-muted group relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <category.icon className="w-20 h-20 sm:w-24 sm:h-24 text-primary transform rotate-12 translate-x-8 -translate-y-8" />
+                                </div>
+                                <CardHeader className="flex flex-col space-y-2 pb-2 z-10">
+                                    <category.icon className="h-7 w-7 sm:h-8 sm:w-8 text-primary mb-2" />
+                                    <CardTitle className="text-base sm:text-lg font-bold leading-tight">
+                                        {category.title}
+                                    </CardTitle>
+                                    <p className="text-[10px] sm:text-xs text-muted-foreground font-mono uppercase tracking-wider">
+                                        {category.description}
+                                    </p>
+                                </CardHeader>
+                                <CardContent className="z-10 relative">
+                                    <ul className="grid gap-1.5 sm:gap-2 mt-2">
+                                        {category.items.map((item) => (
+                                            <li
+                                                key={item}
+                                                className="text-xs sm:text-sm text-foreground/80 flex items-start"
+                                            >
+                                                <span className="w-1.5 h-1.5 rounded-full bg-primary/60 mr-2 mt-1.5 shrink-0" />
+                                                <span className="leading-snug">
+                                                    {item}
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
                     ))}
                 </div>
             </div>

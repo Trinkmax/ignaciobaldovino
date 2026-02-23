@@ -18,7 +18,7 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -51,6 +51,8 @@ import {
     MapPin,
     type LucideIcon,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import { useIntersection } from "@/hooks/use-intersection";
 
 /* ─── Tipos ─── */
 interface ProjectModule {
@@ -69,8 +71,9 @@ interface ProjectDetail {
     link: string;
     color: string;
     bg: string;
-    // Datos detallados para el modal
     longDescription: string;
+    problem?: string;
+    solution?: string;
     images?: string[];
     demoNotice?: string;
     stack?: { category: string; items: string[] }[];
@@ -94,7 +97,8 @@ const projects: ProjectDetail[] = [
         bg: "bg-blue-500/10",
         longDescription:
             "GoPark es un marketplace de estacionamiento (modelo asset-light) que conecta conductores que necesitan estacionar de forma segura, rápida y predecible, con dueños de cocheras privadas que quieren monetizar espacios ociosos. Transforma cocheras subutilizadas en oferta activa de estacionamiento urbano, resolviendo un problema cotidiano con alta frecuencia de uso. No compra ni alquila cocheras: escala sin inmovilizar capital en infraestructura física.",
-        // Sin stack técnico: enfoque en producto y negocio
+        problem: "Hay miles de cocheras privadas vacías en la ciudad y, al mismo tiempo, gente dando vueltas 20 minutos para estacionar. Los dueños de esos espacios no tienen forma simple de alquilarlos, y los conductores no saben que existen.",
+        solution: "Conecté ambos lados en un marketplace: el conductor busca, reserva y paga desde el celular; el dueño de la cochera publica su espacio, configura precio y disponibilidad, y cobra sin hacer nada. La plataforma ajusta precios automáticamente según demanda y previene fraudes con IA.",
         modules: [
             {
                 icon: Search,
@@ -155,6 +159,8 @@ const projects: ProjectDetail[] = [
         bg: "bg-green-500/10",
         longDescription:
             "VerData es un sistema integral de gestión y Punto de Venta (POS) diseñado para puesteros mayoristas y comercios similares. Está estructurado en una arquitectura moderna separada en dos partes principales: una aplicación cliente (frontend móvil/web) y una API centralizada (backend). Permite registrar ventas, manejar entregas parciales/totales, aplicar descuentos, cancelar pedidos y llevar trazabilidad completa del impacto en stock.",
+        problem: "En un puesto de mercado mayorista todo pasa rápido: se vende, se fía, se entrega a medias, se descuenta stock a mano. Al final del día nadie sabe bien cuánto se vendió, cuánto se cobró y cuánto se debe. Y muchas veces ni hay WiFi estable.",
+        solution: "Diseñé un sistema de caja y gestión que funciona incluso sin conexión. Registra cada venta, descuenta stock automáticamente, lleva las cuentas corrientes de cada cliente y permite abrir y cerrar caja con todo cuadrado. Todo desde el celular, pensado para el ritmo real de un mercado de abasto.",
         stack: [
             { category: "Frontend", items: ["Flutter", "Dart", "Provider", "Go Router"] },
             { category: "Backend", items: ["Node.js", "Express", "Prisma ORM"] },
@@ -218,6 +224,8 @@ const projects: ProjectDetail[] = [
         bg: "bg-indigo-500/10",
         longDescription:
             "El proyecto consistía en crear un sistema integral de reservas para el bar/boliche Bottom Bar, combinando automatización por WhatsApp con un panel web de gestión, pensado específicamente para el funcionamiento nocturno. El bot responde automáticamente 24/7, guía al usuario paso a paso para tomar la reserva, valida disponibilidad en tiempo real y registra cada reserva en una base de datos centralizada.",
+        problem: "El dueño del bar recibía cientos de mensajes de WhatsApp por noche pidiendo reservas. Respondía a mano, se confundía con los horarios, aceptaba de más y terminaba con el local desbordado o con gente enojada porque no tenía mesa.",
+        solution: "Armé un bot de WhatsApp que atiende 24/7: toma los datos, verifica si hay lugar y confirma la reserva solo si hay cupo real. Todo se sincroniza con un panel web donde el staff ve las reservas en vivo. Si un horario se llena, el bot deja de aceptar automáticamente.",
         stack: [
             { category: "Bot", items: ["WhatsApp API", "Node.js", "Automatización 24/7"] },
             { category: "Panel Web", items: ["React", "Dashboard en tiempo real"] },
@@ -270,6 +278,8 @@ const projects: ProjectDetail[] = [
         images: ["/images/projects/loscabritsdeoro.png"],
         longDescription:
             "El proyecto consiste en la profesionalización digital completa del restaurante Los Cabritos de Oro, migrando de una gestión tradicional a un ecosistema conectado que abarca desde la infraestructura web hasta la captación activa de clientes mediante pauta publicitaria. La web funciona como el centro de operaciones digitales del restaurante.",
+        problem: "El restaurante tenía buena comida y buena reputación local, pero no existía en internet. No tenía web, no aparecía en Google, y dependía 100% del boca a boca y de que alguien pasara por la puerta. Los turistas —su mayor oportunidad— no lo encontraban.",
+        solution: "Creé toda la presencia digital desde cero: una web con la carta accesible desde el celular, botones directos para reservar por WhatsApp, y campañas de publicidad en Google y Meta segmentadas para turistas y locales. Ahora el restaurante no espera clientes: los busca activamente con datos reales.",
         stack: [
             { category: "Frontend", items: ["Next.js", "TypeScript", "Tailwind CSS"] },
             { category: "Marketing", items: ["Meta Ads", "Google Ads", "Google Analytics"] },
@@ -328,6 +338,8 @@ const projects: ProjectDetail[] = [
         demoNotice: "Este es el sistema hotelero tal cual como funciona y esta navegable pero contiene datos mocks que esta bien aclarar que son simulados, no reales.",
         longDescription:
             "Sistema integral de administración web diseñado específicamente para el Hotel Killa Cafayate. Facilita al personal del hotel el control del calendario de disponibilidad, la gestión de reservas, la fijación de precios y la configuración de las políticas del establecimiento en tiempo real. Actúa como el panel de control que alimenta y se sincroniza con un bot automatizado de n8n para interacciones con clientes vía WhatsApp y Web.",
+        problem: "El hotel manejaba precios, disponibilidad y reservas en planillas sueltas. Cuando un cliente preguntaba por WhatsApp, el recepcionista tenía que buscar en el Excel, calcular el precio a mano según la temporada, y responder minutos después. A veces ya habían reservado en otro lado.",
+        solution: "Construí un sistema web donde el hotel carga habitaciones, define temporadas y precios, y gestiona reservas desde un solo lugar. Ese sistema alimenta un bot de WhatsApp automático que responde al instante con precios reales y disponibilidad actualizada, sin intervención humana.",
         stack: [
             { category: "Framework", items: ["Next.js 14 (App Router)", "TypeScript"] },
             { category: "UI", items: ["Tailwind CSS", "Radix UI", "Shadcn/UI", "Recharts"] },
@@ -391,6 +403,8 @@ const projects: ProjectDetail[] = [
         bg: "bg-orange-500/10",
         longDescription:
             "SellPilot AI fue un proyecto avanzado de automatización de prospección y conversaciones en Instagram, desarrollado íntegramente con código, antes del boom de plataformas low-code como n8n. El sistema detectaba, analizaba y contactaba prospectos de forma inteligente, y respondía conversaciones automáticamente guiando al usuario según su perfil, mensajes y nivel de interés. Incorporaba un sistema RAG (Retrieval Augmented Generation) con embeddings, base de datos vectorial y contexto histórico.",
+        problem: "Prospectar clientes en Instagram a mano es lento y repetitivo: revisar perfiles uno por uno, pensar qué escribirles, mandar mensajes genéricos que nadie responde. Para escalar ventas outbound, hacía falta automatizar sin perder la personalización.",
+        solution: "Desarrollé un sistema que analiza automáticamente cada perfil de Instagram (bio, rubro, estilo), y genera mensajes personalizados usando inteligencia artificial con contexto real del prospecto. También respondía conversaciones de forma autónoma, derivando al humano en el momento justo. Todo con código propio, antes de que existieran herramientas como n8n para esto.",
         stack: [
             { category: "Core", items: ["Python", "Selenium", "Playwright"] },
             { category: "IA", items: ["RAG", "Embeddings", "Base de datos vectorial"] },
@@ -449,44 +463,39 @@ function ProjectDetailModal({
 }) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-2xl max-h-[90vh] p-0 gap-0 overflow-hidden">
+            <DialogContent className="sm:max-w-2xl max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden">
                 {/* Header con gradiente */}
-                <div className={`relative px-6 pt-6 pb-4 ${project.bg}`}>
+                <div className={`relative shrink-0 px-5 sm:px-6 pt-6 pb-4 ${project.bg}`}>
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
                     <DialogHeader className="relative z-10">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className={`p-2.5 rounded-xl bg-background/80 backdrop-blur-sm border border-border/50`}>
-                                <project.icon className={`h-5 w-5 ${project.color}`} />
+                            <div className={`p-2 sm:p-2.5 rounded-xl bg-background/80 backdrop-blur-sm border border-border/50`}>
+                                <project.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${project.color}`} />
                             </div>
                             <Badge
                                 variant={project.status === "Producto Principal" ? "default" : "secondary"}
-                                className="font-mono text-xs tracking-wider"
+                                className="font-mono text-[10px] sm:text-xs tracking-wider"
                             >
                                 {project.status}
                             </Badge>
                         </div>
-                        <DialogTitle className="text-2xl font-bold tracking-tight">
+                        <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight">
                             {project.title}
-                            <span className="text-muted-foreground font-normal text-base ml-2">
+                            <span className="text-muted-foreground font-normal text-sm sm:text-base ml-2">
                                 / {project.subtitle}
                             </span>
                         </DialogTitle>
-                        <DialogDescription className="flex flex-col gap-3 text-sm leading-relaxed mt-1" asChild>
+                        <DialogDescription className="flex flex-col gap-3 text-xs sm:text-sm leading-relaxed mt-1" asChild>
                             <div>
                                 <span>{project.longDescription}</span>
-                                {project.demoNotice && (
-                                    <span className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 p-3 rounded-md text-xs border border-yellow-500/20 block leading-tight">
-                                        ⚠️ {project.demoNotice}
-                                    </span>
-                                )}
                                 {project.link !== "#" && (
                                     <a
                                         href={project.link}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="flex items-center gap-1.5 w-fit mt-1 px-3 py-1.5 bg-primary/10 text-primary font-medium rounded-md hover:bg-primary/20 transition-colors"
+                                        className="inline-flex items-center gap-1.5 w-fit mt-2 px-3 py-1.5 bg-primary/10 text-primary font-medium rounded-md hover:bg-primary/20 transition-colors"
                                     >
-                                        Visitar Proyecto <ArrowUpRight className="h-4 w-4" />
+                                        Visitar Proyecto <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                     </a>
                                 )}
                             </div>
@@ -495,20 +504,55 @@ function ProjectDetailModal({
                 </div>
 
                 {/* Contenido con tabs y galería */}
-                <ScrollArea className="max-h-[55vh]">
-                    <div className="px-6 pb-6">
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="px-5 sm:px-6 pb-6 pt-4">
+                        {project.demoNotice && (
+                            <div className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 p-3 rounded-md text-[10px] sm:text-xs border border-yellow-500/20 mb-5 leading-tight">
+                                ⚠️ {project.demoNotice}
+                            </div>
+                        )}
+
+                        {project.problem && project.solution && (
+                            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-muted/30 border border-border/50 rounded-xl p-4 shadow-sm relative overflow-hidden group/prob hover:bg-muted/50 transition-colors">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-foreground/30"></div>
+                                    <h4 className="text-xs sm:text-sm font-semibold flex items-center gap-1.5 sm:gap-2 mb-2 text-foreground">
+                                        <div className="p-1 sm:p-1.5 rounded-md bg-muted shrink-0 text-foreground/80">
+                                            <Target className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                        </div>
+                                        El Problema
+                                    </h4>
+                                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed pl-1">
+                                        {project.problem}
+                                    </p>
+                                </div>
+                                <div className="bg-muted border border-border/60 rounded-xl p-4 shadow-sm relative overflow-hidden group/sol hover:bg-muted/80 transition-colors">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-foreground/80"></div>
+                                    <h4 className="text-xs sm:text-sm font-semibold flex items-center gap-1.5 sm:gap-2 mb-2 text-foreground">
+                                        <div className="p-1 sm:p-1.5 rounded-md bg-foreground/10 shrink-0 text-foreground">
+                                            <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                        </div>
+                                        La Solución
+                                    </h4>
+                                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed pl-1">
+                                        {project.solution}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {project.images && project.images.length > 0 && (
                             <div className="mt-4 mb-2">
-                                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                                <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                                     Galería
                                 </h4>
-                                <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
+                                <div className="flex gap-4 overflow-x-auto pb-4 snap-x pr-4">
                                     {project.images.map((img, idx) => (
                                         <img
                                             key={idx}
                                             src={img}
                                             alt={`${project.title} screenshot ${idx + 1}`}
-                                            className="h-48 md:h-64 auto rounded-lg object-contain border border-border/10 bg-muted/30 snap-center shrink-0"
+                                            className="h-40 sm:h-48 md:h-64 w-auto rounded-lg object-contain border border-border/10 bg-muted/30 snap-center shrink-0"
                                         />
                                     ))}
                                 </div>
@@ -516,18 +560,18 @@ function ProjectDetailModal({
                         )}
                         <Tabs defaultValue="modules" className="mt-4">
                             <TabsList className={`w-full grid ${project.stack && project.stack.length > 0 ? "grid-cols-3" : "grid-cols-2"}`}>
-                                <TabsTrigger value="modules" className="text-xs sm:text-sm">
-                                    <Layers className="h-3.5 w-3.5 mr-1.5 hidden sm:block" />
+                                <TabsTrigger value="modules" className="text-[10px] sm:text-xs md:text-sm px-1 sm:px-3">
+                                    <Layers className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 hidden sm:block" />
                                     Módulos
                                 </TabsTrigger>
                                 {project.stack && project.stack.length > 0 && (
-                                    <TabsTrigger value="stack" className="text-xs sm:text-sm">
-                                        <Code2 className="h-3.5 w-3.5 mr-1.5 hidden sm:block" />
+                                    <TabsTrigger value="stack" className="text-[10px] sm:text-xs md:text-sm px-1 sm:px-3">
+                                        <Code2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 hidden sm:block" />
                                         Stack
                                     </TabsTrigger>
                                 )}
-                                <TabsTrigger value="value" className="text-xs sm:text-sm">
-                                    <Target className="h-3.5 w-3.5 mr-1.5 hidden sm:block" />
+                                <TabsTrigger value="value" className="text-[10px] sm:text-xs md:text-sm px-1 sm:px-3">
+                                    <Target className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 hidden sm:block" />
                                     Impacto
                                 </TabsTrigger>
                             </TabsList>
@@ -537,14 +581,14 @@ function ProjectDetailModal({
                                 {project.modules.map((mod, i) => (
                                     <div
                                         key={i}
-                                        className="group/mod flex gap-3 p-3 rounded-lg border border-border/50 bg-muted/30 hover:bg-muted/60 transition-colors"
+                                        className="group/mod flex gap-2.5 sm:gap-3 p-3 rounded-lg border border-border/50 bg-muted/30 hover:bg-muted/60 transition-colors"
                                     >
-                                        <div className={`p-2 rounded-lg ${project.bg} shrink-0 h-fit`}>
-                                            <mod.icon className={`h-4 w-4 ${project.color}`} />
+                                        <div className={`p-1.5 sm:p-2 rounded-lg ${project.bg} shrink-0 h-fit`}>
+                                            <mod.icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${project.color}`} />
                                         </div>
                                         <div className="space-y-1 min-w-0">
-                                            <h4 className="font-semibold text-sm leading-tight">{mod.title}</h4>
-                                            <p className="text-xs text-muted-foreground leading-relaxed">
+                                            <h4 className="font-semibold text-xs sm:text-sm leading-tight">{mod.title}</h4>
+                                            <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">
                                                 {mod.description}
                                             </p>
                                         </div>
@@ -557,15 +601,15 @@ function ProjectDetailModal({
                                 <TabsContent value="stack" className="mt-4 space-y-4">
                                     {project.stack.map((cat, i) => (
                                         <div key={i}>
-                                            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                                            <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                                                 {cat.category}
                                             </h4>
-                                            <div className="flex flex-wrap gap-2">
+                                            <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                                 {cat.items.map((item) => (
                                                     <Badge
                                                         key={item}
                                                         variant="outline"
-                                                        className={`${project.bg} border-transparent text-foreground/90 font-medium`}
+                                                        className={`${project.bg} border-transparent text-foreground/90 font-medium text-[10px] sm:text-xs`}
                                                     >
                                                         {item}
                                                     </Badge>
@@ -578,14 +622,14 @@ function ProjectDetailModal({
                                     {/* Highlights */}
                                     <Separator />
                                     <div>
-                                        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                                        <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                                             Destacado
                                         </h4>
                                         <div className="space-y-2">
                                             {project.highlights.map((hl, i) => (
-                                                <div key={i} className="flex items-start gap-2">
-                                                    <CheckCircle2 className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${project.color}`} />
-                                                    <span className="text-xs text-muted-foreground leading-relaxed">
+                                                <div key={i} className="flex items-start gap-1.5 sm:gap-2">
+                                                    <CheckCircle2 className={`h-3 w-3 sm:h-3.5 sm:w-3.5 mt-0.5 shrink-0 ${project.color}`} />
+                                                    <span className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">
                                                         {hl}
                                                     </span>
                                                 </div>
@@ -600,15 +644,15 @@ function ProjectDetailModal({
                                 {project.value.map((val, i) => (
                                     <div
                                         key={i}
-                                        className="relative p-4 rounded-lg border border-border/50 bg-gradient-to-br from-muted/40 to-transparent hover:from-muted/60 transition-colors"
+                                        className="relative p-3 sm:p-4 rounded-lg border border-border/50 bg-gradient-to-br from-muted/40 to-transparent hover:from-muted/60 transition-colors"
                                     >
-                                        <div className="flex items-start gap-3">
-                                            <div className={`p-2 rounded-lg ${project.bg} shrink-0`}>
-                                                <val.icon className={`h-4 w-4 ${project.color}`} />
+                                        <div className="flex items-start gap-2.5 sm:gap-3">
+                                            <div className={`p-1.5 sm:p-2 rounded-lg ${project.bg} shrink-0`}>
+                                                <val.icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${project.color}`} />
                                             </div>
                                             <div className="space-y-1">
-                                                <h4 className="font-semibold text-sm">{val.title}</h4>
-                                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                                <h4 className="font-semibold text-xs sm:text-sm">{val.title}</h4>
+                                                <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">
                                                     {val.description}
                                                 </p>
                                             </div>
@@ -621,14 +665,14 @@ function ProjectDetailModal({
                                     <>
                                         <Separator />
                                         <div>
-                                            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                                            <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                                                 Destacado
                                             </h4>
                                             <div className="space-y-2">
                                                 {project.highlights.map((hl, i) => (
-                                                    <div key={i} className="flex items-start gap-2">
-                                                        <CheckCircle2 className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${project.color}`} />
-                                                        <span className="text-xs text-muted-foreground leading-relaxed">
+                                                    <div key={i} className="flex items-start gap-1.5 sm:gap-2">
+                                                        <CheckCircle2 className={`h-3 w-3 sm:h-3.5 sm:w-3.5 mt-0.5 shrink-0 ${project.color}`} />
+                                                        <span className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed">
                                                             {hl}
                                                         </span>
                                                     </div>
@@ -641,15 +685,15 @@ function ProjectDetailModal({
                                 {/* Tags del proyecto */}
                                 <Separator />
                                 <div>
-                                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                                    <h4 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                                         {project.stack && project.stack.length > 0 ? "Tecnologías Clave" : "Enfoque"}
                                     </h4>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                         {project.tags.map((tag) => (
                                             <Badge
                                                 key={tag}
                                                 variant="outline"
-                                                className="bg-background/50 backdrop-blur-sm border-primary/20 text-foreground/80"
+                                                className="bg-background/50 backdrop-blur-sm border-primary/20 text-foreground/80 text-[10px] sm:text-xs"
                                             >
                                                 {tag}
                                             </Badge>
@@ -659,77 +703,108 @@ function ProjectDetailModal({
                             </TabsContent>
                         </Tabs>
                     </div>
-                </ScrollArea>
+                </div>
             </DialogContent>
         </Dialog>
     );
 }
 
+const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.6,
+            delay: i * 0.1,
+            ease: "easeOut",
+        },
+    }),
+};
+
 /* ─── Componente principal ─── */
 export function Projects() {
     const [selectedProject, setSelectedProject] = React.useState<ProjectDetail | null>(null);
+    const { ref, isInView } = useIntersection<HTMLElement>({ threshold: 0.05 });
 
     return (
-        <section id="projects" className="py-24 container px-4 md:px-6 mx-auto">
-            <div className="flex flex-col mb-16 space-y-4">
-                <Badge variant="secondary" className="w-fit">Portafolio</Badge>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Proyectos Destacados</h2>
-                <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed">
+        <section id="projects" ref={ref} className="py-16 md:py-24 container px-5 md:px-6 mx-auto scroll-mt-10">
+            <motion.div
+                className="flex flex-col mb-10 md:mb-16 space-y-3 md:space-y-4"
+                initial={{ opacity: 0, x: -20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.5 }}
+            >
+                <Badge variant="secondary" className="w-fit font-mono text-xs">
+                    // PORTAFOLIO
+                </Badge>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tighter md:text-4xl lg:text-5xl">
+                    Proyectos Destacados
+                </h2>
+                <p className="max-w-[700px] text-sm sm:text-base text-muted-foreground md:text-xl/relaxed">
                     Soluciones diseñadas desde la operación hacia el código.
                 </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {projects.map((project) => (
-                    <Card
+            </motion.div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                {projects.map((project, i) => (
+                    <motion.div
                         key={project.title}
-                        className="group relative flex flex-col overflow-hidden border-muted bg-card/50 hover:bg-card hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
+                        initial="hidden"
+                        animate={isInView ? "visible" : "hidden"}
+                        custom={i}
+                        variants={cardVariants}
                     >
-                        <CardHeader className="pb-4">
-                            <div className="flex justify-between items-start mb-2">
-                                <div className={`p-3 rounded-xl w-fit ${project.bg}`}>
-                                    <project.icon className={`h-6 w-6 ${project.color}`} />
-                                </div>
-                                <Badge
-                                    variant={project.status === "Producto Principal" ? "default" : "secondary"}
-                                    className="font-mono text-xs tracking-wider"
-                                >
-                                    {project.status}
-                                </Badge>
-                            </div>
-                            <CardTitle className="text-2xl font-bold flex items-center gap-2">
-                                {project.title}
-                                <span className="text-muted-foreground font-normal text-lg hidden sm:inline-block">
-                                    / {project.subtitle}
-                                </span>
-                            </CardTitle>
-                            <CardDescription className="text-base mt-3 leading-relaxed">
-                                {project.description}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex-1 pb-6">
-                            <div className="flex flex-wrap gap-2 mt-auto">
-                                {project.tags.map((tag) => (
+                        <Card className="h-full group relative flex flex-col overflow-hidden border-muted bg-card/50 hover:bg-card hover:shadow-2xl transition-all duration-300 hover:border-primary/20 flex-1">
+                            {/* Subtle tech background patterns */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -z-10 group-hover:bg-primary/10 transition-colors" />
+
+                            <CardHeader className="pb-3 sm:pb-4">
+                                <div className="flex justify-between items-start mb-2 sm:mb-3">
+                                    <div className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl w-fit ${project.bg}`}>
+                                        <project.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${project.color}`} />
+                                    </div>
                                     <Badge
-                                        key={tag}
-                                        variant="outline"
-                                        className="bg-background/50 backdrop-blur-sm border-primary/20 text-foreground/80"
+                                        variant={project.status === "Producto Principal" ? "default" : "secondary"}
+                                        className="font-mono text-[10px] sm:text-xs tracking-wider border-border/50"
                                     >
-                                        {tag}
+                                        {project.status}
                                     </Badge>
-                                ))}
-                            </div>
-                        </CardContent>
-                        <CardFooter className="pt-0">
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                                onClick={() => setSelectedProject(project)}
-                            >
-                                Ver Detalles
-                                <ArrowUpRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                                </div>
+                                <CardTitle className="text-xl sm:text-2xl font-bold flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                                    {project.title}
+                                    <span className="text-muted-foreground font-normal text-[10px] sm:text-sm tracking-wider uppercase">
+                                        / {project.subtitle}
+                                    </span>
+                                </CardTitle>
+                                <CardDescription className="text-sm sm:text-base mt-2 sm:mt-3 leading-relaxed">
+                                    {project.description}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1 pb-4 sm:pb-6">
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-auto">
+                                    {project.tags.map((tag) => (
+                                        <Badge
+                                            key={tag}
+                                            variant="outline"
+                                            className="bg-background/50 backdrop-blur-sm border-primary/10 text-foreground/70 text-[10px] sm:text-xs"
+                                        >
+                                            {tag}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </CardContent>
+                            <CardFooter className="pt-0">
+                                <Button
+                                    variant="ghost"
+                                    className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-colors font-mono text-xs sm:text-sm h-10 sm:h-11"
+                                    onClick={() => setSelectedProject(project)}
+                                >
+                                    Ver Detalles
+                                    <ArrowUpRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </motion.div>
                 ))}
             </div>
 
