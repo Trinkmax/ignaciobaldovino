@@ -13,7 +13,7 @@ import {
     DrawerDescription,
 } from "@/components/ui/drawer";
 import { ArrowUpRight, Target, CheckCircle2, Layers, Code2, ChevronDown } from "lucide-react";
-import { ProjectDetail, ProjectModule } from "@/components/projects";
+import { type ProjectDetail, type ProjectModule } from "@/lib/projects-data";
 
 export function ProjectDetailDrawer({
     project,

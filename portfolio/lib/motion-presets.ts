@@ -1,20 +1,22 @@
 import { Variants } from "framer-motion";
 
-// Helper to disable motion if user prefers reduced motion
-// We rely on CSS for 'prefers-reduced-motion', but we can also tone down framer-motion variants
-// by using shorter durations or simpler easing. In Framer Motion, transition.duration = 0 is safe
-// if handled globally. Alternatively, we keep the presets minimal and let CSS handle the fallback.
+/**
+ * Motion presets for framer-motion.
+ *
+ * IMPORTANT: Avoid `filter: blur(...)` in animation variants — it causes
+ * severe performance penalties on iOS Safari (forces rasterization on every frame).
+ * Use only opacity + transform (translate/scale) which are GPU-composited.
+ */
 
 export const cinematicEnter: Variants = {
-    hidden: { opacity: 0, y: 30, filter: "blur(4px)" },
+    hidden: { opacity: 0, y: 30 },
     visible: (i: number = 0) => ({
         opacity: 1,
         y: 0,
-        filter: "blur(0px)",
         transition: {
             duration: 0.8,
             delay: i * 0.15,
-            ease: [0.25, 1, 0.5, 1] as [number, number, number, number], // CSS cubic bezier equivalent
+            ease: [0.25, 1, 0.5, 1] as [number, number, number, number],
         },
     }),
 };

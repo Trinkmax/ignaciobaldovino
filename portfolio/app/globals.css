@@ -207,6 +207,34 @@
   }
 }
 
+/*
+ * Mobile Safari performance: disable expensive backdrop-blur
+ * on small viewports. Use solid fallback background instead.
+ * This prevents jank/stutter during scroll on iOS Safari.
+ */
+@media (max-width: 768px) {
+
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-3xl {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background-color: oklch(1 0 0 / 90%);
+  }
+
+  .dark .backdrop-blur-sm,
+  .dark .backdrop-blur-md,
+  .dark .backdrop-blur-lg,
+  .dark .backdrop-blur-xl,
+  .dark .backdrop-blur-2xl,
+  .dark .backdrop-blur-3xl {
+    background-color: oklch(0.145 0 0 / 90%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

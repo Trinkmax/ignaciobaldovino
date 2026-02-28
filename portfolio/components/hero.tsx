@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -12,12 +12,49 @@ const TITLE_LINE_1 = "Tecnología aplicada a";
 const TITLE_LINE_2 = "Operaciones Reales.";
 const TYPING_SPEED = 45;
 const PAUSE_BETWEEN_LINES = 400;
+const HERO_FALLBACK_MS = 900;
+
+/**
+ * Detects iOS Safari for conditional behavior.
+ * Only runs on client, returns false during SSR.
+ */
+function isIOSSafari(): boolean {
+    if (typeof window === "undefined") return false;
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS|Chrome/.test(ua);
+    return isIOS && isSafari;
+}
 
 export function Hero() {
-    const [displayedLine1, setDisplayedLine1] = useState("");
-    const [displayedLine2, setDisplayedLine2] = useState("");
-    const [phase, setPhase] = useState<"line1" | "pause" | "line2" | "done">("line1");
-    const [showContent, setShowContent] = useState(false);
+    // SSR: render with full text visible so there's never a blank screen
+    const [displayedLine1, setDisplayedLine1] = useState(TITLE_LINE_1);
+    const [displayedLine2, setDisplayedLine2] = useState(TITLE_LINE_2);
+    const [phase, setPhase] = useState<"line1" | "pause" | "line2" | "done">("done");
+    const [showContent, setShowContent] = useState(true);
+    const [canAnimate, setCanAnimate] = useState(false);
+    const heroTimestamp = useRef<number>(0);
+
+    // On mount: check if we should animate (not iOS Safari, no reduced motion)
+    useEffect(() => {
+        heroTimestamp.current = performance.now();
+
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const iosSafari = isIOSSafari();
+
+        // Only animate typewriter if not iOS Safari and not reduced motion
+        if (!prefersReducedMotion && !iosSafari) {
+            setCanAnimate(true);
+            setDisplayedLine1("");
+            setDisplayedLine2("");
+            setPhase("line1");
+            setShowContent(false);
+        }
+        // Otherwise: keep SSR defaults (full text, showContent=true)
+
+        // Report hero boot metric
+        reportHeroMetric("page_boot");
+    }, []);
 
     const typeLine = useCallback(
         (
@@ -40,7 +77,10 @@ export function Hero() {
         []
     );
 
+    // Typewriter animation (only runs if canAnimate)
     useEffect(() => {
+        if (!canAnimate) return;
+
         let timeout: NodeJS.Timeout;
         let interval: NodeJS.Timeout;
 
@@ -55,16 +95,34 @@ export function Hero() {
                 setPhase("done");
             });
         } else if (phase === "done") {
-            timeout = setTimeout(() => setShowContent(true), 300);
+            timeout = setTimeout(() => {
+                setShowContent(true);
+                reportHeroMetric("hero_ready");
+            }, 300);
         }
 
         return () => {
             clearInterval(interval);
             clearTimeout(timeout);
         };
-    }, [phase, typeLine]);
+    }, [phase, typeLine, canAnimate]);
 
+    // Fail-safe: if animation hasn't completed in HERO_FALLBACK_MS, force show everything
+    useEffect(() => {
+        if (!canAnimate) return;
 
+        const fallbackTimer = setTimeout(() => {
+            if (!showContent) {
+                setDisplayedLine1(TITLE_LINE_1);
+                setDisplayedLine2(TITLE_LINE_2);
+                setPhase("done");
+                setShowContent(true);
+                reportHeroMetric("hero_fallback");
+            }
+        }, HERO_FALLBACK_MS);
+
+        return () => clearTimeout(fallbackTimer);
+    }, [canAnimate, showContent]);
 
     return (
         <section
@@ -93,13 +151,13 @@ export function Hero() {
                         <h1 className="text-[2rem] leading-[1.1] sm:text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-foreground">
                             <span className="block text-foreground/80">
                                 {displayedLine1}
-                                {phase === "line1" && (
+                                {canAnimate && phase === "line1" && (
                                     <span className="inline-block w-[3px] h-[0.85em] bg-foreground ml-0.5 align-baseline animate-pulse" />
                                 )}
                             </span>
                             <span className="block text-foreground mt-1">
                                 {displayedLine2}
-                                {phase === "line2" && (
+                                {canAnimate && phase === "line2" && (
                                     <motion.span
                                         className="inline-block w-[3px] h-[0.85em] bg-foreground/80 ml-[2px] align-baseline"
                                         animate={{ opacity: [1, 0] }}
@@ -113,7 +171,7 @@ export function Hero() {
                     {/* Description + Process Flow + CTA — fade in after typing */}
                     <motion.div
                         className="flex flex-col items-start gap-7 md:gap-9 max-w-4xl"
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={canAnimate ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
                         animate={showContent ? { opacity: 1, y: 0 } : {}}
                         transition={{ duration: 0.7, ease: "easeOut" }}
                     >
@@ -134,9 +192,9 @@ export function Hero() {
                         {/* Buttons mt-2 for a bit of separation */}
                         <motion.div
                             className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-2"
-                            initial={{ opacity: 0, y: 15 }}
+                            initial={canAnimate ? { opacity: 0, y: 15 } : { opacity: 1, y: 0 }}
                             animate={showContent ? { opacity: 1, y: 0 } : {}}
-                            transition={{ duration: 0.5, delay: 0.5 }}
+                            transition={{ duration: 0.5, delay: canAnimate ? 0.5 : 0 }}
                         >
                             <Button
                                 size="lg"
@@ -171,7 +229,7 @@ export function Hero() {
                 className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
                 initial={{ opacity: 0 }}
                 animate={showContent ? { opacity: 1 } : {}}
-                transition={{ delay: 1.2, duration: 0.6 }}
+                transition={{ delay: canAnimate ? 1.2 : 0.3, duration: 0.6 }}
             >
                 <span className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-widest">scroll</span>
                 <motion.div
@@ -187,4 +245,49 @@ export function Hero() {
             </motion.div>
         </section>
     );
+}
+
+/**
+ * Lightweight metric reporter — sends to /api/client-metrics
+ * with 30% sampling. Fire-and-forget.
+ */
+function reportHeroMetric(event: string) {
+    try {
+        // 30% sampling
+        if (Math.random() > 0.3) return;
+
+        const timeSinceNavStart = performance.now();
+        const ua = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+        const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS|Chrome/.test(ua);
+
+        const payload = {
+            event,
+            path: window.location.pathname,
+            ua,
+            iosSafari: isIOS && isSafari,
+            timeSinceNavStartMs: Math.round(timeSinceNavStart),
+            deviceHints: {
+                hardwareConcurrency: navigator.hardwareConcurrency ?? null,
+                deviceMemory: (navigator as unknown as Record<string, unknown>).deviceMemory ?? null,
+            },
+        };
+
+        // Use sendBeacon if available, otherwise fetch
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(
+                "/api/client-metrics",
+                new Blob([JSON.stringify(payload)], { type: "application/json" })
+            );
+        } else {
+            fetch("/api/client-metrics", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+                keepalive: true,
+            }).catch(() => { /* fire and forget */ });
+        }
+    } catch {
+        // Never crash the hero for metrics
+    }
 }
