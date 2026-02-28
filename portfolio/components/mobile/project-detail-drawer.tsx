@@ -30,9 +30,9 @@ export function ProjectDetailDrawer({
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerContent
                 showHandle={false}
-                className="max-h-[90vh] flex flex-col gap-0 rounded-t-2xl overflow-hidden p-0 outline-none"
+                className="max-h-[90vh] flex flex-col gap-0 rounded-t-2xl overflow-hidden p-0 outline-none max-w-full"
             >
-                <div className="w-full h-full overflow-y-auto outline-none pb-safe">
+                <div className="w-full h-full overflow-y-auto overflow-x-hidden outline-none pb-safe">
                     {/* Handle sutil integrado */}
                     <div className="flex flex-col items-center pt-3 pb-1">
                         <div className="w-10 h-1 rounded-full bg-muted-foreground/20" />
@@ -80,7 +80,7 @@ export function ProjectDetailDrawer({
                     <Separator className="mx-5" />
 
                     {/* Contenido con tabs y galería */}
-                    <div className="px-5 pb-6 pt-4 h-full">
+                    <div className="px-5 pb-6 pt-4 h-full overflow-x-hidden">
                         {project.demoNotice && (
                             <div className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 p-3 rounded-md text-[10px] border border-yellow-500/20 mb-5 leading-tight">
                                 ⚠️ {project.demoNotice}

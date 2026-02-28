@@ -730,7 +730,21 @@ const cardVariants = {
 /* ─── Componente principal ─── */
 export function Projects() {
     const [selectedProject, setSelectedProject] = React.useState<ProjectDetail | null>(null);
+    const [tappedIndex, setTappedIndex] = React.useState<number | null>(null);
     const isMobile = useMediaQuery("(max-width: 768px)");
+
+    // Close tapped state when tapping outside
+    React.useEffect(() => {
+        if (tappedIndex === null) return;
+        const handleTouchOutside = (e: TouchEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest('[data-project-card]')) {
+                setTappedIndex(null);
+            }
+        };
+        document.addEventListener('touchstart', handleTouchOutside);
+        return () => document.removeEventListener('touchstart', handleTouchOutside);
+    }, [tappedIndex]);
 
     return (
         <section id="projects" className="py-16 md:py-24 container px-5 md:px-6 mx-auto scroll-mt-10">
@@ -754,67 +768,88 @@ export function Projects() {
             {isMobile ? (
                 <Carousel className="w-full" opts={{ align: "start" }}>
                     <CarouselContent className="-ml-4">
-                        {projects.map((project, i) => (
-                            <CarouselItem key={project.title} className="pl-4 basis-[85%] sm:basis-1/2">
-                                <motion.div
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={{ once: true, margin: "-50px" }}
-                                    custom={i}
-                                    variants={cardVariants}
-                                    className="h-full"
-                                >
-                                    <Card className="h-full group relative flex flex-col overflow-hidden border-muted bg-card/50 hover:bg-card hover:shadow-2xl transition-all duration-300 hover:border-primary/20 flex-1">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -z-10 group-hover:bg-primary/10 transition-colors" />
-                                        <CardHeader className="pb-3 sm:pb-4">
-                                            <div className="flex justify-between items-start mb-2 sm:mb-3">
-                                                <div className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl w-fit ${project.bg}`}>
-                                                    <project.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${project.color}`} />
-                                                </div>
-                                                <Badge
-                                                    variant={project.status === "Producto Principal" ? "default" : "secondary"}
-                                                    className="font-mono text-[10px] sm:text-xs tracking-wider border-border/50"
-                                                >
-                                                    {project.status}
-                                                </Badge>
-                                            </div>
-                                            <CardTitle className="text-xl sm:text-2xl font-bold flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                                                {project.title}
-                                                <span className="text-muted-foreground font-normal text-[10px] sm:text-sm tracking-wider uppercase">
-                                                    / {project.subtitle}
-                                                </span>
-                                            </CardTitle>
-                                            <CardDescription className="text-sm sm:text-base mt-2 sm:mt-3 leading-relaxed">
-                                                {project.description}
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="flex-1 pb-4 sm:pb-6">
-                                            <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-auto">
-                                                {project.tags.map((tag) => (
+                        {projects.map((project, i) => {
+                            const isActive = tappedIndex === i;
+                            return (
+                                <CarouselItem key={project.title} className="pl-4 basis-[85%] sm:basis-1/2">
+                                    <motion.div
+                                        initial="hidden"
+                                        whileInView="visible"
+                                        viewport={{ once: true, margin: "-50px" }}
+                                        custom={i}
+                                        variants={cardVariants}
+                                        className="h-full"
+                                    >
+                                        <Card
+                                            data-project-card
+                                            className={`h-full group relative flex flex-col overflow-hidden border-muted bg-card/50 transition-all duration-300 flex-1 ${isActive ? 'bg-card shadow-2xl border-primary/20' : 'hover:bg-card hover:shadow-2xl hover:border-primary/20'
+                                                }`}
+                                            onClick={() => {
+                                                if (tappedIndex !== i) {
+                                                    setTappedIndex(i);
+                                                }
+                                            }}
+                                        >
+                                            <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl -z-10 transition-colors ${isActive ? 'bg-primary/10' : 'bg-primary/5 group-hover:bg-primary/10'
+                                                }`} />
+                                            <CardHeader className="pb-3 sm:pb-4">
+                                                <div className="flex justify-between items-start mb-2 sm:mb-3">
+                                                    <div className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl w-fit ${project.bg}`}>
+                                                        <project.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${project.color}`} />
+                                                    </div>
                                                     <Badge
-                                                        key={tag}
-                                                        variant="outline"
-                                                        className="bg-background/50 backdrop-blur-sm border-primary/10 text-foreground/70 text-[10px] sm:text-xs"
+                                                        variant={project.status === "Producto Principal" ? "default" : "secondary"}
+                                                        className="font-mono text-[10px] sm:text-xs tracking-wider border-border/50"
                                                     >
-                                                        {tag}
+                                                        {project.status}
                                                     </Badge>
-                                                ))}
-                                            </div>
-                                        </CardContent>
-                                        <CardFooter className="pt-0">
-                                            <Button
-                                                variant="ghost"
-                                                className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-all font-mono text-xs sm:text-sm h-10 sm:h-11 border border-border/50 group-hover:border-primary/20 active:scale-[0.97] active:bg-primary/80 active:text-primary-foreground"
-                                                onClick={() => setSelectedProject(project)}
-                                            >
-                                                Ver Detalles
-                                                <ArrowUpRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                </motion.div>
-                            </CarouselItem>
-                        ))}
+                                                </div>
+                                                <CardTitle className="text-xl sm:text-2xl font-bold flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                                                    {project.title}
+                                                    <span className="text-muted-foreground font-normal text-[10px] sm:text-sm tracking-wider uppercase">
+                                                        / {project.subtitle}
+                                                    </span>
+                                                </CardTitle>
+                                                <CardDescription className="text-sm sm:text-base mt-2 sm:mt-3 leading-relaxed">
+                                                    {project.description}
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="flex-1 pb-4 sm:pb-6">
+                                                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-auto">
+                                                    {project.tags.map((tag) => (
+                                                        <Badge
+                                                            key={tag}
+                                                            variant="outline"
+                                                            className="bg-background/50 backdrop-blur-sm border-primary/10 text-foreground/70 text-[10px] sm:text-xs"
+                                                        >
+                                                            {tag}
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="pt-0">
+                                                <Button
+                                                    variant="ghost"
+                                                    className={`w-full justify-between transition-all font-mono text-xs sm:text-sm h-10 sm:h-11 border active:scale-[0.97] ${isActive
+                                                            ? 'bg-primary text-primary-foreground border-primary/20'
+                                                            : 'border-border/50 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary/20'
+                                                        }`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedProject(project);
+                                                        setTappedIndex(null);
+                                                    }}
+                                                >
+                                                    Ver Detalles
+                                                    <ArrowUpRight className={`h-4 w-4 ml-2 transition-transform ${isActive ? 'translate-x-1 -translate-y-1' : 'group-hover:translate-x-1 group-hover:-translate-y-1'
+                                                        }`} />
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    </motion.div>
+                                </CarouselItem>
+                            );
+                        })}
                     </CarouselContent>
                 </Carousel>
             ) : (
