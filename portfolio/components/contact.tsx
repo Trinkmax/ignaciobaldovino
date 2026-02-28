@@ -81,7 +81,7 @@ export function Contact() {
                                 size="lg"
                                 asChild
                             >
-                                <a href="mailto:contacto@ignaciobaldovino.com">
+                                <a href="mailto:ignacio.baldovino@hotmail.com">
                                     <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
                                     Enviar Correo
                                 </a>
@@ -93,7 +93,7 @@ export function Contact() {
                                     asChild
                                 >
                                     <a
-                                        href="https://linkedin.com/in/ignaciobaldovino"
+                                        href="https://www.linkedin.com/in/ignacio-baldovino"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
@@ -107,7 +107,7 @@ export function Contact() {
                                     asChild
                                 >
                                     <a
-                                        href="https://github.com/nachobaldovino"
+                                        href="https://github.com/Trinkmax"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >

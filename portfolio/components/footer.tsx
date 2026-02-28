@@ -46,7 +46,7 @@ export function Footer() {
                     transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
                 >
                     <Link
-                        href="https://github.com/nachobaldovino"
+                        href="https://github.com/Trinkmax"
                         target="_blank"
                         className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors p-2 sm:px-3 hover:bg-muted/60 rounded-full font-mono border border-transparent hover:border-border/50"
                     >
@@ -55,7 +55,7 @@ export function Footer() {
                         <ArrowUpRight className="h-3 w-3 opacity-50 sm:hidden" />
                     </Link>
                     <Link
-                        href="https://linkedin.com/in/ignaciobaldovino"
+                        href="https://www.linkedin.com/in/ignacio-baldovino"
                         target="_blank"
                         className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors p-2 sm:px-3 hover:bg-muted/60 rounded-full font-mono border border-transparent hover:border-border/50"
                     >
@@ -64,7 +64,7 @@ export function Footer() {
                         <ArrowUpRight className="h-3 w-3 opacity-50 sm:hidden" />
                     </Link>
                     <Link
-                        href="mailto:contacto@ignaciobaldovino.com"
+                        href="mailto:ignacio.baldovino@hotmail.com"
                         className="flex items-center gap-2 text-xs sm:text-sm text-primary hover:text-primary/80 transition-colors p-2 sm:px-3 hover:bg-primary/10 rounded-full font-mono border border-transparent hover:border-primary/20"
                     >
                         <Mail className="h-4 w-4" />

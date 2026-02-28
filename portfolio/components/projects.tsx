@@ -804,7 +804,7 @@ export function Projects() {
                                         <CardFooter className="pt-0">
                                             <Button
                                                 variant="ghost"
-                                                className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-colors font-mono text-xs sm:text-sm h-10 sm:h-11 border border-transparent group-hover:border-primary/20"
+                                                className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-all font-mono text-xs sm:text-sm h-10 sm:h-11 border border-border/50 group-hover:border-primary/20 active:scale-[0.97] active:bg-primary/80 active:text-primary-foreground"
                                                 onClick={() => setSelectedProject(project)}
                                             >
                                                 Ver Detalles
@@ -870,7 +870,7 @@ export function Projects() {
                                 <CardFooter className="pt-0">
                                     <Button
                                         variant="ghost"
-                                        className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-colors font-mono text-xs sm:text-sm h-10 sm:h-11"
+                                        className="w-full justify-between group-hover:bg-primary group-hover:text-primary-foreground transition-all font-mono text-xs sm:text-sm h-10 sm:h-11 border border-border/50 group-hover:border-primary/20 active:scale-[0.97] active:bg-primary/80 active:text-primary-foreground"
                                         onClick={() => setSelectedProject(project)}
                                     >
                                         Ver Detalles

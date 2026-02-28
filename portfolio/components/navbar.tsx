@@ -90,13 +90,13 @@ export function Navbar() {
                         ))}
                         <div className="flex items-center gap-1 pl-4 border-l border-border/50 ml-2">
                             <Button variant="ghost" size="icon" className="w-8 h-8 sm:w-9 sm:h-9" asChild>
-                                <Link href="https://github.com/nachobaldovino" target="_blank">
+                                <Link href="https://github.com/Trinkmax" target="_blank">
                                     <Github className="h-4 w-4" />
                                     <span className="sr-only">GitHub</span>
                                 </Link>
                             </Button>
                             <Button variant="ghost" size="icon" className="w-8 h-8 sm:w-9 sm:h-9" asChild>
-                                <Link href="https://linkedin.com/in/ignaciobaldovino" target="_blank">
+                                <Link href="https://www.linkedin.com/in/ignacio-baldovino" target="_blank">
                                     <Linkedin className="h-4 w-4" />
                                     <span className="sr-only">LinkedIn</span>
                                 </Link>
@@ -129,21 +129,21 @@ export function Navbar() {
                                 ))}
                                 <div className="flex items-center gap-4 mt-6 pt-6 border-t border-border/50">
                                     <Link
-                                        href="https://github.com/nachobaldovino"
+                                        href="https://github.com/Trinkmax"
                                         target="_blank"
                                         className="p-2 bg-muted rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
                                     >
                                         <Github className="h-5 w-5" />
                                     </Link>
                                     <Link
-                                        href="https://linkedin.com/in/ignaciobaldovino"
+                                        href="https://www.linkedin.com/in/ignacio-baldovino"
                                         target="_blank"
                                         className="p-2 bg-muted rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
                                     >
                                         <Linkedin className="h-5 w-5" />
                                     </Link>
                                     <Link
-                                        href="mailto:contacto@ignaciobaldovino.com"
+                                        href="mailto:ignacio.baldovino@hotmail.com"
                                         target="_blank"
                                         className="p-2 bg-muted rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
                                     >

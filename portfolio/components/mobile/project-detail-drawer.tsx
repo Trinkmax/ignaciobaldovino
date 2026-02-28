@@ -12,8 +12,7 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from "@/components/ui/drawer";
-import { ArrowUpRight, Target, CheckCircle2, Layers, Code2 } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ArrowUpRight, Target, CheckCircle2, Layers, Code2, ChevronDown } from "lucide-react";
 import { ProjectDetail, ProjectModule } from "@/components/projects";
 
 export function ProjectDetailDrawer({
@@ -29,14 +28,22 @@ export function ProjectDetailDrawer({
 
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="max-h-[85vh] flex flex-col gap-0 rounded-t-xl overflow-hidden p-0 outline-none">
+            <DrawerContent
+                showHandle={false}
+                className="max-h-[90vh] flex flex-col gap-0 rounded-t-2xl overflow-hidden p-0 outline-none"
+            >
                 <div className="w-full h-full overflow-y-auto outline-none pb-safe">
-                    {/* Header con gradiente */}
-                    <div className={`relative shrink-0 px-5 pt-6 pb-4 ${project.bg}`}>
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90" />
-                        <DrawerHeader className="relative z-10 p-0 !text-left">
+                    {/* Handle sutil integrado */}
+                    <div className="flex flex-col items-center pt-3 pb-1">
+                        <div className="w-10 h-1 rounded-full bg-muted-foreground/20" />
+                        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/30 mt-0.5" />
+                    </div>
+
+                    {/* Header sin color de fondo brusco */}
+                    <div className="shrink-0 px-5 pb-4">
+                        <DrawerHeader className="p-0 !text-left">
                             <div className="flex items-center gap-3 mb-3">
-                                <div className={`p-2 rounded-xl bg-background/80 backdrop-blur-sm border border-border/50`}>
+                                <div className={`p-2 rounded-xl ${project.bg} border border-border/30`}>
                                     <project.icon className={`h-4 w-4 ${project.color}`} />
                                 </div>
                                 <Badge
@@ -70,8 +77,10 @@ export function ProjectDetailDrawer({
                         </DrawerHeader>
                     </div>
 
+                    <Separator className="mx-5" />
+
                     {/* Contenido con tabs y galería */}
-                    <div className="px-5 pb-6 pt-2 h-full">
+                    <div className="px-5 pb-6 pt-4 h-full">
                         {project.demoNotice && (
                             <div className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 p-3 rounded-md text-[10px] border border-yellow-500/20 mb-5 leading-tight">
                                 ⚠️ {project.demoNotice}
@@ -218,3 +227,4 @@ export function ProjectDetailDrawer({
         </Drawer>
     );
 }
+
